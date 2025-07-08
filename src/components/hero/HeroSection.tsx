@@ -6,11 +6,16 @@ import { Suspense, lazy } from 'react'
 import { Heart, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Lazy load Spline with error handling
+// Simple fallback component that matches the expected structure
+const SplineFallback = React.forwardRef<HTMLDivElement>(() => (
+  <div className="w-full h-screen bg-gradient-to-br from-red-50 to-blue-50" />
+));
+SplineFallback.displayName = 'SplineFallback';
+
+// Lazy load Spline with proper error handling
 const Spline = lazy(() => 
   import('@splinetool/react-spline').catch(() => {
-    // If Spline fails to load, return a fallback component
-    return { default: () => <div className="w-full h-screen bg-gradient-to-br from-red-900/20 to-black" /> };
+    return { default: SplineFallback };
   })
 );
 
