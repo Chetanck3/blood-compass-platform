@@ -1,12 +1,13 @@
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, Building2 } from "lucide-react";
+import { BloodTypeSelector } from "@/components/shared/BloodTypeSelector";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthDialogProps {
@@ -18,93 +19,121 @@ interface AuthDialogProps {
 
 export const AuthDialog = ({ open, onOpenChange, userType, onSuccess }: AuthDialogProps) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: '',
+    phone: '',
+    bloodType: 'O+',
+    age: '',
+    weight: '',
+    address: '',
+    hospitalName: '',
+    licenseNumber: ''
+  });
   const { toast } = useToast();
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isLogin && password !== confirmPassword) {
+    // Basic validation
+    if (!formData.email || !formData.password) {
       toast({
-        title: "Password Mismatch",
-        description: "Passwords do not match. Please try again.",
+        title: "Error",
+        description: "Please fill in all required fields",
         variant: "destructive",
       });
       return;
     }
 
-    // Simulate authentication
-    console.log("Authentication attempt:", { email, userType, isLogin });
-    
-    toast({
-      title: isLogin ? "Welcome back!" : "Account created successfully!",
-      description: `You have been ${isLogin ? 'logged in' : 'registered'} as a ${userType}.`,
-    });
-    
-    onSuccess();
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "Success!",
+        description: isLogin ? "Successfully logged in!" : "Account created successfully!",
+      });
+      onSuccess();
+    }, 1000);
   };
 
   const getUserTypeInfo = () => {
     switch (userType) {
       case 'donor':
         return {
+          title: "Donor Portal",
+          description: "Join our community of life-savers",
           icon: Heart,
-          title: "Blood Donor",
-          description: "Help save lives by donating blood",
           color: "text-red-500"
         };
       case 'patient':
         return {
-          icon: Users,
-          title: "Patient",
+          title: "Patient Portal",
           description: "Find compatible blood donors",
+          icon: Users,
           color: "text-blue-500"
         };
       case 'hospital':
         return {
+          title: "Hospital Portal",
+          description: "Manage blood inventory and requests",
           icon: Building2,
-          title: "Healthcare Facility",
-          description: "Manage blood requests and donations",
           color: "text-green-500"
         };
     }
   };
 
   const userInfo = getUserTypeInfo();
+  const IconComponent = userInfo.icon;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <userInfo.icon className={`h-6 w-6 ${userInfo.color}`} />
-            {userInfo.title} {isLogin ? 'Login' : 'Registration'}
+            <IconComponent className={`h-6 w-6 ${userInfo.color}`} />
+            {userInfo.title}
           </DialogTitle>
+          <DialogDescription>
+            {userInfo.description}
+          </DialogDescription>
         </DialogHeader>
 
-        <Card>
-          <CardHeader className="text-center pb-4">
-            <CardDescription>{userInfo.description}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={isLogin ? "login" : "register"} onValueChange={(value) => setIsLogin(value === "login")}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login">
+        <Tabs value={isLogin ? "login" : "register"} onValueChange={(value) => setIsLogin(value === "login")}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="register">Register</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="login">
+            <Card>
+              <CardHeader>
+                <CardTitle>Welcome Back</CardTitle>
+                <CardDescription>Sign in to your account</CardDescription>
+              </CardHeader>
+              <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
                       required
                     />
                   </div>
@@ -113,61 +142,178 @@ export const AuthDialog = ({ open, onOpenChange, userType, onSuccess }: AuthDial
                     <Input
                       id="password"
                       type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange('password', e.target.value)}
                       required
                     />
                   </div>
                   <Button type="submit" className="w-full">
-                    Login
+                    Sign In
                   </Button>
                 </form>
-              </TabsContent>
-              
-              <TabsContent value="register">
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="register">
+            <Card>
+              <CardHeader>
+                <CardTitle>Create Account</CardTitle>
+                <CardDescription>Join our community today</CardDescription>
+              </CardHeader>
+              <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fullName">Full Name</Label>
+                      <Input
+                        id="fullName"
+                        placeholder="Enter your full name"
+                        value={formData.fullName}
+                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        placeholder="Phone number"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
-                      id="register-email"
+                      id="email"
                       type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
                       required
                     />
                   </div>
+
+                  {userType === 'donor' && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="age">Age</Label>
+                          <Input
+                            id="age"
+                            type="number"
+                            placeholder="Age"
+                            value={formData.age}
+                            onChange={(e) => handleInputChange('age', e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="weight">Weight (kg)</Label>
+                          <Input
+                            id="weight"
+                            type="number"
+                            placeholder="Weight"
+                            value={formData.weight}
+                            onChange={(e) => handleInputChange('weight', e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Blood Type</Label>
+                        <BloodTypeSelector 
+                          value={formData.bloodType} 
+                          onChange={(value) => handleInputChange('bloodType', value)} 
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {userType === 'patient' && (
+                    <div className="space-y-2">
+                      <Label>Blood Type Needed</Label>
+                      <BloodTypeSelector 
+                        value={formData.bloodType} 
+                        onChange={(value) => handleInputChange('bloodType', value)} 
+                      />
+                    </div>
+                  )}
+
+                  {userType === 'hospital' && (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="hospitalName">Hospital Name</Label>
+                        <Input
+                          id="hospitalName"
+                          placeholder="Hospital/Clinic name"
+                          value={formData.hospitalName}
+                          onChange={(e) => handleInputChange('hospitalName', e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="licenseNumber">License Number</Label>
+                        <Input
+                          id="licenseNumber"
+                          placeholder="Medical license number"
+                          value={formData.licenseNumber}
+                          onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+
                   <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
+                    <Label htmlFor="address">Address</Label>
                     <Input
-                      id="register-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Create a password"
+                      id="address"
+                      placeholder="Enter your address"
+                      value={formData.address}
+                      onChange={(e) => handleInputChange('address', e.target.value)}
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm your password"
-                      required
-                    />
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder="Create a password"
+                        value={formData.password}
+                        onChange={(e) => handleInputChange('password', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Confirm your password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
+
                   <Button type="submit" className="w-full">
                     Create Account
                   </Button>
                 </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

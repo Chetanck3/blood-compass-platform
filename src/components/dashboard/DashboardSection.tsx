@@ -1,9 +1,7 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Users, MapPin, Award, Calendar, Bell, Settings, LogOut } from "lucide-react";
+import { Heart, Bell, Settings, LogOut } from "lucide-react";
 import { DonorDashboard } from "./DonorDashboard";
 import { PatientDashboard } from "./PatientDashboard";
 import { HospitalDashboard } from "./HospitalDashboard";
@@ -13,8 +11,6 @@ interface DashboardSectionProps {
 }
 
 export const DashboardSection = ({ userType }: DashboardSectionProps) => {
-  const [activeTab, setActiveTab] = useState('overview');
-
   const handleLogout = () => {
     window.location.reload();
   };

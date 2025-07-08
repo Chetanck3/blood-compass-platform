@@ -1,24 +1,63 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Users, MapPin, Award, Calendar, TrendingUp, Clock, Download } from "lucide-react";
+import { Heart, Users, MapPin, Award, Calendar, TrendingUp, Clock, Download, CheckCircle } from "lucide-react";
 import { BloodTypeSelector } from "../shared/BloodTypeSelector";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export const DonorDashboard = () => {
   const [bloodType, setBloodType] = useState('O+');
+  const { toast } = useToast();
 
   const donations = [
-    { id: 1, date: '2024-01-15', location: 'City General Hospital', status: 'Completed' },
-    { id: 2, date: '2024-01-02', location: 'Red Cross Center', status: 'Completed' },
-    { id: 3, date: '2023-12-20', location: 'Community Blood Bank', status: 'Completed' },
+    { id: 1, date: '2024-01-15', location: 'City General Hospital', status: 'Completed', livesImpacted: 3 },
+    { id: 2, date: '2024-01-02', location: 'Red Cross Center', status: 'Completed', livesImpacted: 2 },
+    { id: 3, date: '2023-12-20', location: 'Community Blood Bank', status: 'Completed', livesImpacted: 4 },
   ];
 
   const matches = [
-    { id: 1, patient: 'Emergency Case #1234', hospital: 'City General Hospital', urgency: 'Critical', bloodType: 'O+' },
-    { id: 2, patient: 'Surgery Patient', hospital: 'Metro Medical Center', urgency: 'High', bloodType: 'O+' },
+    { 
+      id: 1, 
+      patient: 'Emergency Case #1234', 
+      hospital: 'City General Hospital', 
+      urgency: 'Critical', 
+      bloodType: 'O+',
+      distance: '2.1 km',
+      timePosted: '2 hours ago'
+    },
+    { 
+      id: 2, 
+      patient: 'Surgery Patient #5678', 
+      hospital: 'Metro Medical Center', 
+      urgency: 'High', 
+      bloodType: 'O+',
+      distance: '3.5 km',
+      timePosted: '5 hours ago'
+    },
   ];
+
+  const handleScheduleDonation = () => {
+    toast({
+      title: "Donation Scheduled!",
+      description: "Your donation appointment has been scheduled for next week.",
+    });
+  };
+
+  const handleRespondToMatch = (matchId: number) => {
+    toast({
+      title: "Response Sent!",
+      description: "The hospital has been notified of your availability.",
+    });
+  };
+
+  const handleDownloadCertificate = (donationId: number) => {
+    toast({
+      title: "Certificate Downloaded!",
+      description: "Your donation certificate has been downloaded.",
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -89,7 +128,7 @@ export const DonorDashboard = () => {
                 <p className="text-lg font-semibold">28 years</p>
               </div>
             </div>
-            <Button className="w-full bg-red-500 hover:bg-red-600">
+            <Button className="w-full bg-red-500 hover:bg-red-600" onClick={handleScheduleDonation}>
               <Calendar className="mr-2 h-4 w-4" />
               Schedule Donation
             </Button>
@@ -118,12 +157,19 @@ export const DonorDashboard = () => {
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">{match.hospital}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Blood Type: {match.bloodType}</span>
-                    <Button size="sm" variant="outline">
-                      Respond
-                    </Button>
+                  <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-gray-500">
+                    <span>Blood Type: {match.bloodType}</span>
+                    <span>Distance: {match.distance}</span>
+                    <span>Posted: {match.timePosted}</span>
                   </div>
+                  <Button 
+                    size="sm" 
+                    className="w-full" 
+                    onClick={() => handleRespondToMatch(match.id)}
+                  >
+                    <CheckCircle className="mr-1 h-3 w-3" />
+                    Respond to Request
+                  </Button>
                 </div>
               ))}
             </div>
@@ -146,13 +192,18 @@ export const DonorDashboard = () => {
           <div className="space-y-4">
             {donations.map((donation) => (
               <div key={donation.id} className="flex items-center justify-between border-b pb-4">
-                <div>
+                <div className="flex-1">
                   <p className="font-semibold">{donation.location}</p>
                   <p className="text-sm text-gray-600">{donation.date}</p>
+                  <p className="text-xs text-green-600">Helped save {donation.livesImpacted} lives</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">{donation.status}</Badge>
-                  <Button size="sm" variant="ghost">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => handleDownloadCertificate(donation.id)}
+                  >
                     <Download className="h-4 w-4" />
                   </Button>
                 </div>
@@ -172,20 +223,23 @@ export const DonorDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4">
-            <div className="text-center p-4 border rounded-lg">
+            <div className="text-center p-4 border rounded-lg bg-yellow-50">
               <Award className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
               <h4 className="font-semibold">Hero Badge</h4>
               <p className="text-sm text-gray-600">10+ donations</p>
+              <Badge className="mt-2 bg-yellow-500">Earned</Badge>
             </div>
-            <div className="text-center p-4 border rounded-lg">
+            <div className="text-center p-4 border rounded-lg bg-red-50">
               <Heart className="h-8 w-8 text-red-500 mx-auto mb-2" />
               <h4 className="font-semibold">Life Saver</h4>
               <p className="text-sm text-gray-600">Saved 45 lives</p>
+              <Badge className="mt-2 bg-red-500">Earned</Badge>
             </div>
-            <div className="text-center p-4 border rounded-lg">
+            <div className="text-center p-4 border rounded-lg bg-blue-50">
               <Clock className="h-8 w-8 text-blue-500 mx-auto mb-2" />
               <h4 className="font-semibold">Regular Donor</h4>
               <p className="text-sm text-gray-600">1 year streak</p>
+              <Badge className="mt-2 bg-blue-500">Earned</Badge>
             </div>
           </div>
         </CardContent>
