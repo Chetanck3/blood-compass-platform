@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Heart, Users, MapPin, Award, Shield, Clock } from "lucide-react";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { DashboardSection } from "@/components/dashboard/DashboardSection";
+import { HeroSection } from "@/components/ui/hero-section";
 
 const Index = () => {
   const [authOpen, setAuthOpen] = useState(false);
@@ -22,85 +23,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-blue-100 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Heart className="h-8 w-8 text-red-500" />
-            <span className="text-2xl font-bold text-blue-900">B-Donor</span>
-          </div>
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-blue-700 hover:text-blue-900 transition-colors">Features</a>
-            <a href="#how-it-works" className="text-blue-700 hover:text-blue-900 transition-colors">How It Works</a>
-            <a href="#impact" className="text-blue-700 hover:text-blue-900 transition-colors">Impact</a>
-            <Button 
-              variant="outline" 
-              className="border-blue-300 text-blue-700 hover:bg-blue-50"
-              onClick={() => handleAuthClick('donor')}
-            >
-              Sign In
-            </Button>
-          </nav>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold text-blue-900 mb-6 leading-tight">
-            Connecting Hearts,
-            <span className="text-red-500"> Saving Lives</span>
-          </h1>
-          <p className="text-xl text-blue-700 mb-12 leading-relaxed">
-            B-Donor is the comprehensive platform that bridges the gap between blood donors and patients in need. 
-            Join our community and help save lives with every donation.
-          </p>
-          
-          <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto mb-12">
-            <Button 
-              size="lg" 
-              className="bg-red-500 hover:bg-red-600 text-white py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-              onClick={() => handleAuthClick('donor')}
-            >
-              <Heart className="mr-2 h-6 w-6" />
-              Become a Donor
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-2 border-blue-500 text-blue-700 hover:bg-blue-50 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-              onClick={() => handleAuthClick('patient')}
-            >
-              <Users className="mr-2 h-6 w-6" />
-              Find a Donor
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-2 border-green-500 text-green-700 hover:bg-green-50 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
-              onClick={() => handleAuthClick('hospital')}
-            >
-              <MapPin className="mr-2 h-6 w-6" />
-              For Hospitals
-            </Button>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 shadow-lg">
-              <div className="text-3xl font-bold text-red-500 mb-2">10,000+</div>
-              <div className="text-blue-700">Lives Saved</div>
-            </div>
-            <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 shadow-lg">
-              <div className="text-3xl font-bold text-blue-500 mb-2">25,000+</div>
-              <div className="text-blue-700">Active Donors</div>
-            </div>
-            <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 shadow-lg">
-              <div className="text-3xl font-bold text-green-500 mb-2">500+</div>
-              <div className="text-blue-700">Partner Hospitals</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection onAuthClick={handleAuthClick} />
 
       {/* Features Section */}
       <section id="features" className="bg-white py-20">
