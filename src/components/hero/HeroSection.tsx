@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -31,15 +30,13 @@ function HeroSplineBackground() {
       overflow: 'hidden',
     }}>
       {!splineError ? (
-        <Spline
-          style={{
-            width: '100%',
-            height: '100vh',
-            pointerEvents: 'auto',
-          }}
-          scene="https://prod.spline.design/us3ALejTXl6usHZ7/scene.splinecode"
-          onError={() => setSplineError(true)}
-        />
+        <Suspense fallback={<div className="w-full h-screen bg-gradient-to-br from-red-50 to-blue-50" />}>
+          <Spline
+            scene="https://prod.spline.design/us3ALejTXl6usHZ7/scene.splinecode"
+            onLoad={() => console.log('Spline scene loaded')}
+            onError={() => setSplineError(true)}
+          />
+        </Suspense>
       ) : (
         <div className="w-full h-screen bg-gradient-to-br from-red-50 to-blue-50" />
       )}
@@ -67,8 +64,8 @@ function ScreenshotSection({ screenshotRef }: { screenshotRef: React.RefObject<H
       <div ref={screenshotRef} className="bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden shadow-2xl border border-blue-200/50 w-full md:w-[80%] lg:w-[70%] mx-auto">
         <div>
           <img
-            src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=3840&h=2160&fit=crop&crop=center"
-            alt="B-Donor Platform Screenshot"
+            src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=3840&h=2160&fit=crop&crop=center"
+            alt="B-Donor Platform - Medical professionals working together"
             className="w-full h-auto block rounded-lg mx-auto"
           />
         </div>
@@ -113,12 +110,7 @@ function HeroContent({ onDonorClick, onPatientClick }: HeroContentProps) {
   );
 }
 
-interface NavbarProps {
-  onDonorClick: () => void;
-  onPatientClick: () => void;
-}
-
-function Navbar({ onDonorClick, onPatientClick }: NavbarProps) {
+function Navbar({ onDonorClick, onPatientClick }: { onDonorClick: () => void; onPatientClick: () => void }) {
   const [hoveredNavItem, setHoveredNavItem] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileDropdowns, setMobileDropdowns] = useState({
